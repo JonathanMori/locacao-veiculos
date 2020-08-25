@@ -34,7 +34,6 @@ export class VeiculosFormComponent implements OnInit {
             response => {
               this.veiculo = response;
               this.cadastrado = true;
-              this.veiculo.valorDiaria = this.veiculo.valorDiaria.toString().replace('.', ',');
             },
             errorResponse => this.veiculo = new Veiculo())
       }
