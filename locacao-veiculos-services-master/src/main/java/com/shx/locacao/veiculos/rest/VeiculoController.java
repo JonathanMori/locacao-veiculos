@@ -2,6 +2,7 @@ package com.shx.locacao.veiculos.rest;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,62 +20,68 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.shx.locacao.veiculos.model.entity.Veiculo;
-import com.shx.locacao.veiculos.model.repository.VeiculoRepository;
+import com.shx.locacao.veiculos.rest.dao.VeiculoDAO;
 
 @RestController
 @RequestMapping(path = "/veiculos")
 @CrossOrigin("http://localhost:4200")
+@Transactional
 public class VeiculoController {
 
-    private final VeiculoRepository veiculoRepository;
+    private final VeiculoDAO veiculoDAO;
 
     @Autowired
-    public VeiculoController(VeiculoRepository veiculoRepository) {
-        this.veiculoRepository = veiculoRepository;
+    public VeiculoController(VeiculoDAO veiculoDAO) {
+        this.veiculoDAO = veiculoDAO;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Veiculo salvar(@RequestBody @Valid Veiculo veiculo) {
+    public Veiculo inserir(@RequestBody @Valid Veiculo veiculo) {
         veiculo.setStatus("Disponível");
-        return veiculoRepository.save(veiculo);
+        return veiculoDAO.inserir(veiculo);
     }
 
     @GetMapping
-    public List<Veiculo> acharTodos() {
-        return veiculoRepository.findAll();
+    public List<Veiculo> listarTodos() {
+        return veiculoDAO.listarTodos();
     }
 
     @GetMapping(path = "/{id}")
-    public Veiculo acharPorId(@PathVariable Integer id) {
-        return veiculoRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Veículo não encontrado"));
+    public Veiculo buscarPorId(@PathVariable Integer id) {
+        Veiculo veiculo = veiculoDAO.buscarPorId(id);
+        if (veiculo != null) {
+            return veiculo;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Veículo não encontrado");
+        }
     }
 
     @PutMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void atualizar(@PathVariable Integer id, @RequestBody Veiculo veiculoNovo) {
-        veiculoRepository.findById(id)
-                .map(veiculo -> {
-                    veiculoNovo.setIdVeiculo(veiculo.getIdVeiculo());
-                    return veiculoRepository.save(veiculoNovo);
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Veículo não encontrado"));
+    public Veiculo atualizar(@PathVariable Integer id, @RequestBody Veiculo veiculoNovo) {
+        Veiculo veiculo = veiculoDAO.buscarPorId(id);
+        if (veiculo != null) {
+            veiculoNovo.setIdVeiculo(veiculo.getIdVeiculo());
+            return veiculoDAO.atualizar(veiculoNovo);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Veículo não encontrado");
+        }
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletar(@PathVariable Integer id) {
-        veiculoRepository.findById(id)
-                .map(veiculo -> {
-                    veiculoRepository.delete(veiculo);
-                    return Void.TYPE;
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Veículo não encontrado"));
+    public void remover(@PathVariable Integer id) {
+        Veiculo veiculo = veiculoDAO.buscarPorId(id);
+        if (veiculo != null) {
+            veiculoDAO.remover(veiculo);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Veículo não encontrado");
+        }
     }
 
     @GetMapping(path = "/disponiveis")
-    public List<Veiculo> acharTodosDisponiveis() {
-        return veiculoRepository.findyByAvailableVeiculos();
+    public List<Veiculo> buscarPorVeiculosDisponiveis() {
+        return veiculoDAO.buscarPorVeiculosDisponiveis();
     }
 }

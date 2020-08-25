@@ -2,6 +2,7 @@ package com.shx.locacao.veiculos.rest;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,62 +20,68 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.shx.locacao.veiculos.model.entity.Cliente;
-import com.shx.locacao.veiculos.model.repository.ClienteRepository;
+import com.shx.locacao.veiculos.rest.dao.ClienteDAO;
 
 @RestController
 @RequestMapping(path = "/clientes")
 @CrossOrigin("http://localhost:4200")
+@Transactional
 public class ClienteController {
 
-    private final ClienteRepository clienteRepository;
+    private final ClienteDAO clienteDAO;
 
     @Autowired
-    public ClienteController(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
+    public ClienteController(ClienteDAO clienteDAO) {
+        this.clienteDAO = clienteDAO;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Cliente salvar(@RequestBody @Valid Cliente cliente) {
-        return clienteRepository.save(cliente);
+    public Cliente inserir(@RequestBody @Valid Cliente cliente) {
+        return clienteDAO.inserir(cliente);
     }
 
     @GetMapping
-    public List<Cliente> acharTodos() {
-        return clienteRepository.findAll();
+    public List<Cliente> listarTodos() {
+        return clienteDAO.listarTodos();
     }
 
     @GetMapping(path = "/{id}")
-    public Cliente acharPorId(@PathVariable Integer id) {
-        return clienteRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+    public Cliente buscarPorId(@PathVariable Integer id) {
+        Cliente cliente = clienteDAO.buscarPorId(id);
+        if (cliente != null) {
+            return cliente;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+        }
     }
 
     @PutMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void atualizar(@PathVariable Integer id, @RequestBody Cliente clienteNovo) {
-        clienteRepository.findById(id)
-                .map(cliente -> {
-                    clienteNovo.setIdCliente(cliente.getIdCliente());
-                    return clienteRepository.save(clienteNovo);
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+    public Cliente atualizar(@PathVariable Integer id, @RequestBody Cliente clienteNovo) {
+        Cliente cliente = clienteDAO.buscarPorId(id);
+        if (cliente != null) {
+            clienteNovo.setIdCliente(cliente.getIdCliente());
+            return clienteDAO.atualizar(clienteNovo);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+        }
     }
 
     @DeleteMapping(path = "/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletar(@PathVariable Integer id) {
-        clienteRepository.findById(id)
-                .map(cliente -> {
-                    clienteRepository.delete(cliente);
-                    return Void.TYPE;
-                })
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
+    public void remover(@PathVariable Integer id) {
+        Cliente cliente = clienteDAO.buscarPorId(id);
+        if (cliente != null) {
+            clienteDAO.remover(cliente);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+        }
     }
 
 
     @GetMapping(path = "/ativos")
-    public List<Cliente> acharTodosAtivos() {
-        return clienteRepository.findyByActiveClients();
+    public List<Cliente> buscarPorClientesAtivos() {
+        return clienteDAO.buscarPorClientesAtivos();
     }
 }

@@ -1,11 +1,10 @@
 package com.shx.locacao.veiculos.rest;
 
-import lombok.RequiredArgsConstructor;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -24,89 +23,108 @@ import org.springframework.web.server.ResponseStatusException;
 import com.shx.locacao.veiculos.model.entity.Aluguel;
 import com.shx.locacao.veiculos.model.entity.Cliente;
 import com.shx.locacao.veiculos.model.entity.Veiculo;
-import com.shx.locacao.veiculos.model.repository.AluguelRepository;
-import com.shx.locacao.veiculos.model.repository.ClienteRepository;
-import com.shx.locacao.veiculos.model.repository.VeiculoRepository;
+import com.shx.locacao.veiculos.rest.dao.AluguelDAO;
+import com.shx.locacao.veiculos.rest.dao.ClienteDAO;
+import com.shx.locacao.veiculos.rest.dao.VeiculoDAO;
 import com.shx.locacao.veiculos.rest.dto.AluguelDTO;
+
 
 @RestController
 @RequestMapping(path = "/alugueis")
 @CrossOrigin("http://localhost:4200")
-@RequiredArgsConstructor
+@Transactional
 public class AluguelController {
 
-    private final AluguelRepository aluguelRepository;
-    private final ClienteRepository clienteRepository;
-    private final VeiculoRepository veiculoRepository;
+    private final AluguelDAO aluguelDAO;
+    private final ClienteDAO clienteDAO;
+    private final VeiculoDAO veiculoDAO;
+
+    public AluguelController(AluguelDAO aluguelDAO, ClienteDAO clienteDAO, VeiculoDAO veiculoDAO) {
+        this.aluguelDAO = aluguelDAO;
+        this.clienteDAO = clienteDAO;
+        this.veiculoDAO = veiculoDAO;
+    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Aluguel salvar(@RequestBody @Valid AluguelDTO dto) {
+    public Aluguel inserir(@RequestBody @Valid AluguelDTO dto) {
         //Pega cliente e veiculo
-        Cliente cliente = clienteRepository.findById(dto.getIdCliente())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cliente não encontrado"));
+        Cliente cliente = clienteDAO.buscarPorId(dto.getIdCliente());
+        if (cliente == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cliente não encontrado");
+        }
 
-        Veiculo veiculo = veiculoRepository.findById(dto.getIdVeiculo())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veículo não encontrado"));
+        Veiculo veiculo = veiculoDAO.buscarPorId(dto.getIdVeiculo());
+        if (veiculo == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veículo não encontrado");
+        }
 
         LocalDate data = LocalDate.parse(dto.getDataLocacao(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         //Atualiza status do veículo para alugado
         veiculo.setStatus("Alugado");
-        veiculoRepository.save(veiculo);
+        veiculoDAO.atualizar(veiculo);
 
         Aluguel aluguel = new Aluguel();
         aluguel.setCliente(cliente);
         aluguel.setVeiculo(veiculo);
         aluguel.setDataLocacao(data);
 
-        return aluguelRepository.save(aluguel);
+        return aluguelDAO.inserir(aluguel);
     }
 
     @GetMapping
-    public List<Aluguel> listar(@RequestParam(value = "filtro", required = false, defaultValue = "") String filtro,
+    public List<Aluguel> filtrar(@RequestParam(value = "filtro", required = false, defaultValue = "") String filtro,
                                 @RequestParam(value = "idCliente", required = false, defaultValue = "") String idCliente) {
         if (idCliente.equals("")) {
             if (filtro.equals("")) {
-                return aluguelRepository.findAll();
+                return aluguelDAO.listarTodos();
             } else if (filtro.equals("alugados")) {
-                return aluguelRepository.findyByActiveAluguel();
+                return aluguelDAO.buscarPorAluguelAtivo();
             } else {
-                return aluguelRepository.findyByFinishedAluguel();
+                return aluguelDAO.buscarPorAluguelFinalizado();
             }
         } else {
             if (filtro.equals("")) {
-                return aluguelRepository.findyByAluguelCliente(Integer.parseInt(idCliente));
+                return aluguelDAO.buscarPorAluguelCliente(Integer.parseInt(idCliente));
             } else if (filtro.equals("alugados")) {
-                return aluguelRepository.findyByActiveAluguelCliente(Integer.parseInt(idCliente));
+                return aluguelDAO.buscarPorAluguelClienteAtivo(Integer.parseInt(idCliente));
             } else {
-                return aluguelRepository.findyByFinishedAluguelCliente(Integer.parseInt(idCliente));
+                return aluguelDAO.buscarPorAluguelClienteFinalizado(Integer.parseInt(idCliente));
             }
         }
     }
 
     @GetMapping(path = "/{id}")
-    public Aluguel acharPorId(@PathVariable Integer id) {
-        return aluguelRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel com o código especificado não encontrado"));
+    public Aluguel buscarPorId(@PathVariable Integer id) {
+        Aluguel aluguel = aluguelDAO.buscarPorId(id);
+        if (aluguel != null) {
+            return aluguel;
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Aluguel com o código especificado não encontrado");
+        }
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Aluguel devolver(@RequestBody @Valid AluguelDTO dto) {
         //Pega cliente e veiculo
-        Cliente cliente = clienteRepository.findById(dto.getIdCliente())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cliente não encontrado"));
+        Cliente cliente = clienteDAO.buscarPorId(dto.getIdCliente());
+        if (cliente == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cliente não encontrado");
+        }
 
-        Veiculo veiculo = veiculoRepository.findById(dto.getIdVeiculo())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veículo não encontrado"));
+        Veiculo veiculo = veiculoDAO.buscarPorId(dto.getIdVeiculo());
+        if (veiculo == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Veículo não encontrado");
+        }
 
         LocalDate dataLocacao = LocalDate.parse(dto.getDataLocacao(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         LocalDate dataDevolucao = LocalDate.parse(dto.getDataDevolucao(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
         //Atualiza status do veículo para alugado
         veiculo.setStatus("Disponível");
-        veiculoRepository.save(veiculo);
+        veiculoDAO.atualizar(veiculo);
 
         Aluguel aluguel = new Aluguel();
         aluguel.setIdAluguel(dto.getIdAluguel());
@@ -116,6 +134,6 @@ public class AluguelController {
         aluguel.setDataDevolucao(dataDevolucao);
         aluguel.setValorAluguel(dto.getValorAluguel());
 
-        return aluguelRepository.save(aluguel);
+        return aluguelDAO.atualizar(aluguel);
     }
 }
