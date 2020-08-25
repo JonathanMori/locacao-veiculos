@@ -16,12 +16,16 @@ Acesse o banco para consulta pelo link: http://localhost:8088/locacao-veiculos-s
 
 ### Instruções - (__locacao-veiculos-app__)
 
-Navegue até a pasta __locacao-veiculos-app__ e execute o comando em seu terminal, para baixar todas as dependencias para o node_modules:
+Instale o [NodeJs](https://nodejs.org/en/download/), navegue até a pasta __locacao-veiculos-app__ e execute o comando em seu terminal, para baixar todas as dependencias para o node_modules:
 
 ```
 npm install
 ```
+Em seguida, execute o comando para instalar o Angular CLI(9.1.1) caso não tenha instalado:
 
+```
+npm install -g @angular/cli@9.1.1
+```
 Após a instalação do npm, digite em seu terminal para inicializar a aplicação:
 
 ```
@@ -41,7 +45,8 @@ e acesse pelo link http://localhost:4200
 *	JPA
 * Lombok
 *	Angular
-* Js/Ts
+* TypeScript
+* JavaScript
 * Bootstrap
 *	GIT
 
