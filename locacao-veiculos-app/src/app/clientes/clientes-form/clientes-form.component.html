@@ -1,0 +1,76 @@
+<h1 class="mt-4">Cliente</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">{{cliente.idCliente ? 'Edição' : 'Cadastro'}}</li>
+</ol>
+<div class="container">
+    <form #clienteForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert" *ngIf="success == true">
+                    Cliente salvo/atualizado com sucesso!
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert" *ngFor="let erro of errors">
+                    {{ erro }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="cadastrado">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>ID:</label>
+                    <input type="text" class="form-control" [ngModel]="cliente.idCliente" name="idCliente" disabled="true"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>CPF: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="cliente.cpf" name="cpf" mask="000.000.000-00"/>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Nome: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="cliente.nome" name="nome"/>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Data de Nascimento: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="cliente.dataNascimento" name="dataNascimento"
+                    [dropSpecialCharacters]="false" mask="00/00/0000" required/>
+                </div>
+            </div>
+
+            <div class="col-md-2 form-check">
+                <div class="form-group">
+                    <label for="status">Ativo?</label>
+                    <input type="checkbox" class="form-control form-check-input" [(ngModel)]="cliente.status" name="status" id="status"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-success" *ngIf="!cliente.idCliente">
+                    <i class="fa fa-save"></i> Salvar
+                </button>
+
+                <button type="submit" class="btn btn-primary" *ngIf="cliente.idCliente">
+                    <i class="fa fa-sync-alt"></i> Atualizar
+                </button>
+
+                <button type="button" class="btn btn-danger ml-1" (click)="voltarParaListagem()">
+                    <i class="fa fa-arrow-alt-circle-left"></i> Voltar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

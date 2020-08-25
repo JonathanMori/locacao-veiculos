@@ -1,0 +1,64 @@
+<h1 class="mt-4">Aluguel</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Cadastro</li>
+</ol>
+<div class="container">
+    <form #form="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert" *ngIf="success == true">
+                    {{mensagemSuccess}}
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert" *ngFor="let erro of errors">
+                    {{erro}}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label>Cliente: *</label>
+                    <select class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="aluguel.idCliente">
+                        <option *ngFor="let cliente of clientes" [ngValue]="cliente.idCliente">
+                            {{cliente.nome}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label>Veículo: *</label>
+                    <select class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="aluguel.idVeiculo">
+                        <option *ngFor="let veiculo of veiculos" [ngValue]="veiculo.idVeiculo">
+                            {{veiculo.nome}} ({{veiculo.ano}}/{{veiculo.modelo}})
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Data de Locação: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="aluguel.dataLocacao" name="dataLocacao"
+                    [dropSpecialCharacters]="false" mask="00/00/0000"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-success" *ngIf="!aluguel.idAluguel">
+                    <i class="fa fa-save"></i> Salvar
+                </button>
+
+                <button type="button" class="btn btn-danger ml-1" (click)="voltarParaListagem()">
+                    <i class="fa fa-arrow-alt-circle-left"></i> Voltar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

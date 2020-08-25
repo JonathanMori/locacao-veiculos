@@ -1,0 +1,104 @@
+<h1 class="mt-4">Veículo</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">{{veiculo.idVeiculo ? 'Edição' : 'Cadastro'}}</li>
+</ol>
+<div class="container">
+    <form #veiculoForm="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert" *ngIf="success == true">
+                    Veiculo salvo/atualizado com sucesso!
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert" *ngFor="let erro of errors">
+                    {{ erro }}
+                </div>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="cadastrado">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>ID:</label>
+                    <input type="text" class="form-control" [ngModel]="veiculo.idVeiculo" name="idVeiculo" disabled="true"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Marca: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="veiculo.marca" name="marca" maxlength="30"/>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Nome: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="veiculo.nome" name="nome" maxlength="100"/>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Ano:</label>
+                    <input type="text" class="form-control" [(ngModel)]="veiculo.ano" name="ano" mask="0000"/>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Modelo:</label>
+                    <input type="text" class="form-control" [(ngModel)]="veiculo.modelo" name="modelo" mask="0000"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label>Combustivel:</label>
+                    <select name="combustivel" id="combustivel" [(ngModel)]="veiculo.combustivel" class="form-control">
+                        <option value="Etanol">Etanol</option>
+                        <option value="Gasolina">Gasolina</option>
+                        <option value="Flex">Flex</option>
+                        <option value="GNV">GNV</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Valor da Diária: *</label>
+                    <input type="text" class="form-control" [(ngModel)]="veiculo.valorDiaria" name="valorDiaria" 
+                    currencyMask [options]="{ prefix: 'R$ ', thousands: '.', decimal: ',', align: 'left'}"/>
+                </div>
+            </div>
+
+            <div class="col-md-4" *ngIf="cadastrado">
+                <div class="form-group">
+                    <label>Status:</label>
+                    <input type="text" class="form-control" [(ngModel)]="veiculo.status" name="status" disabled="true"/>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-success" *ngIf="!veiculo.idVeiculo">
+                    <i class="fa fa-save"></i> Salvar
+                </button>
+
+                <button type="submit" class="btn btn-primary" *ngIf="veiculo.idVeiculo">
+                    <i class="fa fa-sync-alt"></i> Atualizar
+                </button>
+
+                <button type="button" class="btn btn-danger ml-1" (click)="voltarParaListagem()">
+                    <i class="fa fa-arrow-alt-circle-left"></i> Voltar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

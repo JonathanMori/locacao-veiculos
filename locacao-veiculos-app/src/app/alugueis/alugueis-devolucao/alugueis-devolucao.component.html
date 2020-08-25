@@ -1,0 +1,96 @@
+<h1 class="mt-4">Aluguel</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Devolução</li>
+</ol>
+<div class="container">
+    <form #form="ngForm" (ngSubmit)="onSubmit()">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-success" role="alert" *ngIf="success == true">
+                    {{mensagemSuccess}}
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="alert alert-danger" role="alert" *ngFor="let erro of errors">
+                    {{erro}}
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <label for="">Código:</label>
+                <input type="text" class="form-control" [(ngModel)]="aluguelBusca.idAluguel" name="idAluguel"/>
+            </div>
+
+            <div class="col-md-2" style="margin-top: 32px">
+                <label for=""></label>
+                <button type="button" class="btn btn-primary" (click)="pegarAluguel()">
+                    <i class="fa fa-search"></i> Buscar
+                </button>
+            </div>
+        </div>
+
+        <div class="row mt-4" *ngIf="busca">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <p class="form-control">
+                        <strong>{{aluguelBusca.cliente.idCliente}}</strong> - {{aluguelBusca.cliente.nome}}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Veículo:</label>
+                    <p class="form-control">
+                        <strong>{{aluguelBusca.veiculo.idVeiculo}}</strong> - {{aluguelBusca.veiculo.nome}}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4" *ngIf="busca">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Data de Locação:</label>
+                    <p class="form-control">{{aluguelBusca.dataLocacao}}</p>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label>Data de Devolução:</label>
+                    <input type="text" class="form-control" [(ngModel)]="aluguel.dataDevolucao" name="dataDevolucao"
+                    [dropSpecialCharacters]="false" mask="00/00/0000"/>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <button type="button" class="btn btn-primary" (click)="calcularAluguel()" style="margin-top: 32px">
+                    <i class="fas fa-calculator"></i> Calcular Aluguel
+                </button>
+            </div>
+        </div>
+
+        <div class="row" *ngIf="resultado != null">
+            <div class="col-md-2">
+                <label>Valor do Aluguel:</label>
+                <p class="form-control">R${{resultado}}</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5 mt-2 mb-2">
+                <button type="submit" class="btn btn-success" *ngIf="resultado != null">
+                    <i class="fa fa-save"></i> Confirmar Devolução
+                </button>
+
+                <button type="button" class="btn btn-danger ml-1" (click)="voltarParaListagem()">
+                    <i class="fa fa-arrow-alt-circle-left"></i> Voltar
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

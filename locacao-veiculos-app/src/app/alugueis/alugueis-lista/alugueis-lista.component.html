@@ -1,0 +1,82 @@
+<h1 class="mt-4">Aluguel</h1>
+<ol class="breadcrumb mb-4">
+    <li class="breadcrumb-item active">Listagem</li>
+</ol>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <button class="btn btn-success" (click)="novoCadastro()">
+                <i class="fa fa-plus"></i> Cadastrar
+            </button>
+            <button class="btn btn-dark ml-3" (click)="devolucaoAluguel()">
+                <i class="fa fa-plus"></i> Realizar Devolução
+            </button>
+        </div>
+    </div>
+
+    <form #filtroForm="ngForm" (submit)="filtrar()">
+        <div class="row mb-2">
+            <div class="col-md-2">
+                <label for="">Mostrar:</label>
+                <select class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="filtro">
+                    <option value="">Todos</option>
+                    <option value="alugados">
+                        Aluguéis em andamento
+                    </option>
+                    <option value="finalizados">
+                        Aluguéis finalizados
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>Cliente:</label>
+                    <select class="form-control" [ngModelOptions]="{standalone: true}" [(ngModel)]="idCliente">
+                        <option value="">Todos</option>
+                        <option *ngFor="let cliente of clientes" [ngValue]="cliente.idCliente">
+                            {{cliente.nome}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4" style="margin-top: 32px">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-search"></i> Filtrar
+                </button>
+
+                <button type="submit" class="btn btn-warning ml-4" (click)="limparFiltros()">
+                    Limpar filtros
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-condensed table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Cliente</th>
+                        <th>Veículo</th>
+                        <th>Data de Locação</th>
+                        <th *ngIf="!filtroAlugados">Data de Devolução</th>
+                        <th *ngIf="!filtroAlugados">Valor do Aluguel</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let aluguel of alugueis">
+                        <td>{{aluguel.idAluguel}}</td>
+                        <td>{{aluguel.cliente.nome}}</td>
+                        <td>{{aluguel.veiculo.nome}}</td>
+                        <td>{{aluguel.dataLocacao}}</td>
+                        <td *ngIf="!filtroAlugados">{{aluguel.dataDevolucao}}</td>
+                        <td *ngIf="!filtroAlugados">{{aluguel.valorAluguel}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
