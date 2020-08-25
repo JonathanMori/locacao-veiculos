@@ -10,7 +10,7 @@ Desafio prático Fullstack do processo seletivo da SHX.
 
 ### Instruções - (__locacao-veiculos-services-master__)
 
-Execute o projeto __locacao-veiculos-services-master__ a partir do main da classe LocacaoVeiculosServicesApplication.
+Importe o projeto maven __locacao-veiculos-services-master__ e após executar o build, inicialize-o a partir do main na classe LocacaoVeiculosServicesApplication.
 
 Acesse o banco para consulta pelo link: http://localhost:8088/locacao-veiculos-services/h2
 
@@ -37,7 +37,7 @@ ng serve
 ```
 e acesse pelo link http://localhost:4200
 
-## Built With
+## Feito com
 * Java
 * Spring Boot
 *	Maven
@@ -50,6 +50,6 @@ e acesse pelo link http://localhost:4200
 * Bootstrap
 *	GIT
 
-## Authors
+## Autor
 
 * **Jonathan Mori** - [Linkedin](https://www.linkedin.com/in/jonathan-mori-19842a163)
