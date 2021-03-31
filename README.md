@@ -1,4 +1,4 @@
-# Locação Veículos - SHX
+# Locação Veículos
 
 Desafio prático Fullstack do processo seletivo da SHX.
 
